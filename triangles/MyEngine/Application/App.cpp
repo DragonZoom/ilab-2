@@ -53,7 +53,7 @@ namespace ezg
         m_window->setKeyCallback(keyCallback);
 
         m_window->setInputMode(GLFW_STICKY_KEYS, 1);
-        m_window->setInputMode(GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+        m_window->setInputMode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
         const int wHeight = m_window->getHeight();
         const int wWidth = m_window->getWidth();
@@ -249,13 +249,14 @@ namespace ezg
 
         if (m_window->getKey(GLFW_KEY_TAB) != GLFW_PRESS) {
             double x = m_window->getCursorXPos(), y = m_window->getCursorYPos();
-            const float dx = wWidth / 2.f - x;
-            const float dy = wHeight / 2.f - y;
+            const float dx = m_prev_cursor_x - x;
+            const float dy = m_prev_cursor_y - y;
 
             m_cameraView.turnInHorizontalPlane(glm::radians(90.f * dx / wWidth));
             m_cameraView.turnInVerticalPlane(glm::radians(90.f * dy / wHeight));
 
-            m_window->setCursorPosition(wWidth / 2.0, wHeight / 2.0);
+            m_prev_cursor_x = x;
+            m_prev_cursor_y = y;
         }
 
         {

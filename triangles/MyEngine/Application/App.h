@@ -55,6 +55,8 @@ namespace ezg
 
         bool                         m_sceneIsLoaded = false;
 
+        double m_prev_cursor_x = 0, m_prev_cursor_y = 0;
+
     public:
 
         AppLVL4           (const AppLVL4&) = delete; //not supported
