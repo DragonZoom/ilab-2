@@ -81,6 +81,26 @@ namespace ezg::engine
         cleanup();
     }
 
+    VkExtent2D
+    Engine::chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities) {
+      if (capabilities.currentExtent.width !=
+          std::numeric_limits<uint32_t>::max()) {
+        return capabilities.currentExtent;
+      } else {
+        VkExtent2D actualExtent = {
+            static_cast<uint32_t>(m_rWindow.getWidth()),
+            static_cast<uint32_t>(m_rWindow.getHeight())};
+
+        actualExtent.width =
+            std::clamp(actualExtent.width, capabilities.minImageExtent.width,
+                       capabilities.maxImageExtent.width);
+        actualExtent.height =
+            std::clamp(actualExtent.height, capabilities.minImageExtent.height,
+                       capabilities.maxImageExtent.height);
+
+        return actualExtent;
+      }
+    }
 
     void Engine::createSwapChain_()
     {
@@ -95,7 +115,7 @@ namespace ezg::engine
         swapChainCreateInfo.minImageCount = numImages;
         swapChainCreateInfo.imageFormat = m_core.getSurfaceFormat().format;
         swapChainCreateInfo.imageColorSpace = m_core.getSurfaceFormat().colorSpace;
-        swapChainCreateInfo.imageExtent = SurfaceCaps.currentExtent;
+        swapChainCreateInfo.imageExtent = chooseSwapExtent(SurfaceCaps);
         swapChainCreateInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
         swapChainCreateInfo.preTransform = VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR;
         swapChainCreateInfo.imageArrayLayers = 1;
@@ -901,6 +921,7 @@ namespace ezg::engine
 
         result = vkQueuePresentKHR(m_queue, &presentInfo);
         if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR) {
+            std::cerr << "Error: " << result << std::endl;
             assert(0); //TODO resize window
         } else if (result != VK_SUCCESS) {
             throw std::runtime_error(("failed to present swap chain image!"));

@@ -227,6 +227,7 @@ namespace ezg::engine
         VkShaderModule createShaderModule_(const std::string& source_);
 
         void createSwapChain_();
+        VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
 
         void initDescriptors();
 
